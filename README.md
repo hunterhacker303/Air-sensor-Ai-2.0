@@ -1,4 +1,4 @@
-🚀 Problem Statement (The Real One)
+🚀 Problem Statement 
 
 Air pollution is not abstract. It kills silently, degrades productivity, and worsens chronic disease—especially in Indian cities where AQI monitoring is sparse, delayed, and reactive.
 
