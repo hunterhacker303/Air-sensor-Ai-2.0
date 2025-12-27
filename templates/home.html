@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- Dashboard Section -->
+<section id="dashboard" class="py-20 max-w-7xl mx-auto px-6">
+    {% include "dashboard.html" %}
+</section>
+
+<!-- Device Section -->
+<section id="device" class="py-20 max-w-7xl mx-auto px-6">
+    {% include "DeviceStatus.html" %}
+</section>
+
+<!-- Trends Section -->
+<section id="trends" class="py-20 max-w-7xl mx-auto px-6">
+    {% include "Trends.html" %}
+</section>
+
+<!-- Forecast Section -->
+<section id="forecast" class="py-20 max-w-7xl mx-auto px-6">
+    {% include "forecast.html" %}
+</section>
+
+<!-- Awareness Section-->
+<section id="Awareness" class="py-20 max-w-7xl mx-auto px-6">
+    {% include "Awareness.html" %}
+</section>
+{% endblock %}

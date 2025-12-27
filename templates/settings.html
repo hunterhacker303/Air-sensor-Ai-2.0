@@ -1,0 +1,624 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Settings Panel — AQI App</title>
+  <style>
+    :root{
+      --bg: #f7f7fb;
+      --card: #ffffff;
+      --muted: #6b7280;
+      --accent: #4f46e5;
+      --accent-600: #4338ca;
+      --success: #059669;
+      --danger: #dc2626;
+      --glass: rgba(255,255,255,0.6);
+      --radius: 12px;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    .dark {
+      --bg: #0b1220;
+      --card: #0f1724;
+      --muted: #94a3b8;
+      --accent: #7c3aed;
+      --accent-600: #6d28d9;
+      --glass: rgba(20,24,32,0.6);
+    }
+
+    body{
+      margin:0;
+      background: linear-gradient(180deg,var(--bg), #ffffff 40%);
+      min-height:100vh;
+      color: #0f1724;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding:32px;
+    }
+    .dark body { color: white; }
+
+    .container{
+      max-width: 980px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 24px;
+      align-items:start;
+    }
+
+    @media (max-width: 900px){
+      .container{ grid-template-columns: 1fr; padding: 16px; }
+    }
+
+    .card{
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: 0 6px 30px rgba(15,23,42,0.06);
+      border: 1px solid rgba(15,23,42,0.04);
+    }
+
+    h1{ margin:0 0 12px 0; font-size:20px; display:flex; align-items:center; gap:8px;}
+    h2{ margin: 0 0 8px 0; font-size:16px; }
+    p.muted{ color: var(--muted); margin:0 0 12px 0; font-size:13px; }
+
+    .field{ margin-bottom:12px; display:flex; flex-direction:column; gap:8px; }
+    input[type="text"], textarea, select {
+      border-radius:8px;
+      padding:10px 12px;
+      border:1px solid rgba(15,23,42,0.08);
+      background: transparent;
+      outline:none;
+      font-size:14px;
+    }
+    textarea{ min-height:90px; resize:vertical; }
+
+    .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .btn { background:var(--accent); color:white; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; font-weight:600; }
+    .btn.secondary { background:transparent; color:var(--accent-600); border:1px solid rgba(79,70,229,0.12); }
+
+    .toggle {
+      width:46px; height:26px; background:#e6e6ef; border-radius:999px; position:relative; cursor:pointer;
+      box-shadow: inset 0 1px 0 rgba(0,0,0,0.02);
+    }
+    .toggle .dot{
+      width:20px; height:20px; background:white; border-radius:50%; position:absolute; top:3px; left:3px; transition: all .18s ease;
+      box-shadow: 0 3px 10px rgba(2,6,23,0.08);
+    }
+    .toggle.on { background: linear-gradient(90deg,var(--accent), var(--accent-600)); }
+    .toggle.on .dot{ left: 23px; }
+
+    .seg { display:inline-flex; background: rgba(15,23,42,0.04); border-radius:8px; padding:4px; }
+    .seg button{ background:transparent; border:0; padding:6px 12px; border-radius:6px; cursor:pointer; color:var(--muted); font-weight:600; }
+    .seg button.active{ background: var(--card); box-shadow: 0 4px 14px rgba(2,6,23,0.06); color:var(--accent-600); }
+
+    .gas-grid { display:grid; grid-template-columns: repeat(3,1fr); gap:8px; }
+    .chip { padding:8px 10px; border-radius:8px; border:1px solid rgba(15,23,42,0.06); cursor:pointer; text-align:center; font-weight:600; }
+    .chip.on { background: linear-gradient(180deg, rgba(79,70,229,0.08), rgba(124,58,237,0.06)); border-color: rgba(79,70,229,0.18); color:var(--accent-600); }
+
+    .radio-row { display:flex; gap:8px; }
+    .radio { padding:8px 10px; border-radius:8px; border:1px solid rgba(15,23,42,0.06); cursor:pointer; }
+    .radio.selected { border-color: rgba(79,70,229,0.18); background: rgba(79,70,229,0.06); color:var(--accent-600); font-weight:700; }
+
+    .small { font-size:13px; color:var(--muted); }
+
+    .aside-info { position:sticky; top:32px; }
+
+    .preview { background: linear-gradient(180deg, rgba(79,70,229,0.04), rgba(124,58,237,0.02)); border-radius:10px; padding:12px; font-size:14px; color:var(--muted); }
+
+    .range { width:100%; }
+    .divider { height:1px; background: rgba(15,23,42,0.04); margin:12px 0; border-radius:4px; }
+
+    footer small { color: var(--muted); display:block; margin-top:10px; }
+  </style>
+</head>
+<body>
+  <div class="container" id="appRoot">
+    <!-- Left / Main -->
+    <div>
+      <div class="card" aria-labelledby="settingsTitle">
+        <h1 id="settingsTitle">⚙️ Settings</h1>
+        <p class="muted">Customize the Air / AQI app behaviour and appearance.</p>
+
+        <!-- Location -->
+        <section class="field">
+          <h2>📍 Location</h2>
+          <input id="locationInput" type="text" placeholder="Enter city, postcode, or GPS coordinate" />
+          <div class="row small">
+            <button id="detectBtn" class="btn secondary">Detect My Location</button>
+            <span id="locationStatus" class="small" style="margin-left:6px"></span>
+          </div>
+        </section>
+
+        <div class="divider"></div>
+
+        <!-- About Us -->
+        <section class="field">
+          <h2>ℹ️ About Us</h2>
+          <textarea id="aboutInput" placeholder="Short description about this site / team (editable)"></textarea>
+          <div class="row">
+            <button id="saveAbout" class="btn">Save About</button>
+            <button id="previewAboutBtn" class="btn secondary">Toggle Preview</button>
+          </div>
+          <div id="aboutPreview" class="preview" style="display:none; margin-top:12px;"></div>
+        </section>
+
+        <div class="divider"></div>
+
+        <!-- Appearance -->
+        <section class="field">
+          <h2>🌙 Appearance</h2>
+          <div class="row" style="align-items:center;">
+            <div id="darkToggle" class="toggle" role="switch" aria-checked="false" tabindex="0">
+              <div class="dot"></div>
+            </div>
+            <div>
+              <div style="font-weight:700">Dark Mode</div>
+              <div class="small">Toggle to switch the theme</div>
+            </div>
+          </div>
+        </section>
+
+        <div class="divider"></div>
+
+        <!-- AQI Unit -->
+        <section class="field">
+          <h2>📏 AQI Unit Preferences</h2>
+          <div class="seg" role="tablist" aria-label="AQI unit">
+            <button data-value="US" class="active">US AQI</button>
+            <button data-value="CN">China AQI (HJ 633-2012)</button>
+            <button data-value="RAW">µg/m³ (Raw)</button>
+          </div>
+        </section>
+
+        <div class="divider"></div>
+
+        <!-- Notifications -->
+        <section class="field">
+          <h2>🔔 Notification Settings</h2>
+          <div class="row" style="align-items:center;">
+            <div id="notifToggle" class="toggle" role="switch" aria-checked="true" tabindex="0">
+              <div class="dot"></div>
+            </div>
+            <div style="flex:1">
+              <div style="font-weight:700">Enable Push Notifications</div>
+              <div class="small">Receive alerts when AQI crosses threshold</div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;">
+            <label class="small">Alert threshold: <strong id="notifValue">150</strong> AQI</label>
+            <input id="notifRange" class="range" type="range" min="0" max="300" step="10" value="150" />
+          </div>
+        </section>
+
+        <div class="divider"></div>
+
+        <!-- Data Settings -->
+        <section class="field">
+          <h2>📡 Data Settings</h2>
+
+          <div style="margin-bottom:8px;">
+            <div class="small">Refresh frequency</div>
+            <div class="row" style="margin-top:6px;">
+              <button class="seg-btn btn secondary" data-freq="1">1 min</button>
+              <button class="seg-btn btn secondary active" data-freq="5">5 min</button>
+              <button class="seg-btn btn secondary" data-freq="15">15 min</button>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;">
+            <div class="small" style="margin-bottom:8px;">Select which gases to show</div>
+            <div class="gas-grid">
+              <div class="chip on" data-gas="PM2.5">PM2.5</div>
+              <div class="chip on" data-gas="PM10">PM10</div>
+              <div class="chip" data-gas="CO">CO</div>
+              <div class="chip" data-gas="NO₂">NO₂</div>
+              <div class="chip" data-gas="SO₂">SO₂</div>
+              <div class="chip" data-gas="O₃">O₃</div>
+            </div>
+          </div>
+
+          <div style="margin-top:12px;">
+            <div class="small" style="margin-bottom:8px;">Choose chart style</div>
+            <div class="radio-row">
+              <div class="radio selected" data-style="Bar">Bar</div>
+              <div class="radio" data-style="Line">Line</div>
+              <div class="radio" data-style="Gauge">Gauge</div>
+            </div>
+          </div>
+        </section>
+
+        <div class="divider"></div>
+
+        <!-- Predictions -->
+        <section class="field">
+          <h2>🤖 Prediction Settings</h2>
+          <label class="small">Enable AI forecasting for next 24 hours</label>
+          <div style="margin-top:8px;">
+            <input id="predictCheckbox" type="checkbox" /> <label for="predictCheckbox" class="small">Enable predictions</label>
+          </div>
+        </section>
+
+        <div class="divider"></div>
+
+        <!-- Health Preferences -->
+        <section class="field">
+          <h2>❤️ Health Preference Settings</h2>
+          <div class="small">Age group selection → personalized advice</div>
+          <div style="margin-top:8px;" class="radio-row" id="ageGroupRow">
+            <div class="radio selected" data-age="Child">Child</div>
+            <div class="radio" data-age="Adult">Adult</div>
+            <div class="radio" data-age="Senior">Senior</div>
+          </div>
+
+          <div style="margin-top:12px;" class="row">
+            <button id="generateAdvice" class="btn">Generate Personalized Advice</button>
+            <button id="saveAll" class="btn secondary">Save Settings</button>
+          </div>
+
+          <div id="adviceBox" class="card" style="margin-top:12px; display:none; background:linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));">
+            <strong>Advice</strong>
+            <div id="adviceText" style="margin-top:8px;" class="small"></div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Right / Aside -->
+    <aside class="aside-info">
+      <div class="card">
+        <h2>Preview & Quick Info</h2>
+        <p class="small">Current saved settings are loaded from your browser (localStorage). Use "Save Settings" to persist changes.</p>
+
+        <div style="margin-top:12px;">
+          <strong>Current</strong>
+          <div class="small" style="margin-top:6px;">
+            <div>Location: <span id="currentLocation">—</span></div>
+            <div>AQI Unit: <span id="currentAQI">US</span></div>
+            <div>Refresh: <span id="currentRefresh">5 min</span></div>
+            <div>Gases: <span id="currentGases">PM2.5, PM10</span></div>
+            <div>Chart: <span id="currentChart">Bar</span></div>
+            <div>Notifications: <span id="currentNotif">On</span> (Threshold: <span id="currentThresh">150</span>)</div>
+            <div>Age group: <span id="currentAge">Child</span></div>
+            <div>Predictions: <span id="currentPred">Off</span></div>
+          </div>
+        </div>
+
+        <footer style="margin-top:12px;"><small>Tip: This settings panel is static HTML/JS — integrate generate advice with your backend API where indicated.</small></footer>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    // --- Helper: DOM references ---
+    const el = (selector) => document.querySelector(selector);
+    const elAll = (selector) => Array.from(document.querySelectorAll(selector));
+
+    // Elements
+    const locationInput = el('#locationInput');
+    const detectBtn = el('#detectBtn');
+    const locationStatus = el('#locationStatus');
+
+    const aboutInput = el('#aboutInput');
+    const saveAbout = el('#saveAbout');
+    const previewAboutBtn = el('#previewAboutBtn');
+    const aboutPreview = el('#aboutPreview');
+
+    const darkToggle = el('#darkToggle');
+    const segButtons = elAll('.seg button');
+    const notifToggle = el('#notifToggle');
+    const notifRange = el('#notifRange');
+    const notifValue = el('#notifValue');
+
+    const segFreqBtns = elAll('.seg-btn');
+    const gasChips = elAll('.chip');
+    const styleRadios = elAll('.radio');
+    const predictCheckbox = el('#predictCheckbox');
+
+    const ageRadios = elAll('#ageGroupRow .radio');
+
+    const generateAdviceBtn = el('#generateAdvice');
+    const saveAllBtn = el('#saveAll');
+    const adviceBox = el('#adviceBox');
+    const adviceText = el('#adviceText');
+
+    // preview panel items
+    const currentLocation = el('#currentLocation');
+    const currentAQI = el('#currentAQI');
+    const currentRefresh = el('#currentRefresh');
+    const currentGases = el('#currentGases');
+    const currentChart = el('#currentChart');
+    const currentNotif = el('#currentNotif');
+    const currentThresh = el('#currentThresh');
+    const currentAge = el('#currentAge');
+    const currentPred = el('#currentPred');
+
+    // --- Settings state (will be saved to localStorage) ---
+    const DEFAULTS = {
+      location: '',
+      about: 'AirGuard — real-time AQI monitoring & personalized advice.',
+      darkMode: false,
+      aqiUnit: 'US',
+      notificationsEnabled: true,
+      notificationThreshold: 150,
+      refreshFrequency: 5,
+      visibleGases: ['PM2.5','PM10'],
+      chartStyle: 'Bar',
+      predictionsEnabled: false,
+      ageGroup: 'Child'
+    };
+
+    function loadSettings() {
+      try {
+        const raw = localStorage.getItem('aqi_settings_v1');
+        if (!raw) return {...DEFAULTS};
+        const parsed = JSON.parse(raw);
+        return {...DEFAULTS, ...parsed};
+      } catch (e) {
+        console.warn('Failed to load settings', e);
+        return {...DEFAULTS};
+      }
+    }
+
+    function saveSettings(settings) {
+      localStorage.setItem('aqi_settings_v1', JSON.stringify(settings));
+      updatePreview(settings);
+    }
+
+    function applyToUI(settings) {
+      locationInput.value = settings.location || '';
+      aboutInput.value = settings.about || '';
+      aboutPreview.textContent = settings.about || '';
+      // dark
+      setDark(settings.darkMode, false);
+
+      // aqi unit
+      segButtons.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.value === settings.aqiUnit);
+      });
+
+      // notifications
+      setToggle(notifToggle, settings.notificationsEnabled, false);
+      notifRange.value = settings.notificationThreshold;
+      notifValue.textContent = String(settings.notificationThreshold);
+
+      // refresh freq
+      segFreqBtns.forEach(b => b.classList.toggle('active', Number(b.dataset.freq) === settings.refreshFrequency));
+
+      // gases
+      gasChips.forEach(chip => {
+        const gas = chip.dataset.gas;
+        chip.classList.toggle('on', settings.visibleGases.includes(gas));
+      });
+
+      // chart style
+      styleRadios.forEach(r => r.classList.toggle('selected', r.dataset.style === settings.chartStyle));
+
+      // predictions
+      predictCheckbox.checked = settings.predictionsEnabled;
+
+      // age
+      ageRadios.forEach(r => r.classList.toggle('selected', r.dataset.age === settings.ageGroup));
+
+      updatePreview(settings);
+    }
+
+    function updatePreview(settings) {
+      currentLocation.textContent = settings.location || '—';
+      currentAQI.textContent = settings.aqiUnit;
+      currentRefresh.textContent = settings.refreshFrequency + ' min';
+      currentGases.textContent = settings.visibleGases.join(', ');
+      currentChart.textContent = settings.chartStyle;
+      currentNotif.textContent = settings.notificationsEnabled ? 'On' : 'Off';
+      currentThresh.textContent = settings.notificationThreshold;
+      currentAge.textContent = settings.ageGroup;
+      currentPred.textContent = settings.predictionsEnabled ? 'On' : 'Off';
+    }
+
+    // --- UI helpers ---
+    function setToggle(toggleEl, on, announce = true) {
+      toggleEl.classList.toggle('on', !!on);
+      toggleEl.setAttribute('aria-checked', !!on);
+      if (announce) toggleEl.querySelector('.dot')?.animate([{ transform: on ? 'translateX(0)' : 'translateX(23px)' }], { duration: 140 });
+    }
+    function setDark(isDark, persist=true) {
+      document.documentElement.classList.toggle('dark', !!isDark);
+      if (persist) {
+        const s = loadSettings();
+        s.darkMode = !!isDark;
+        saveSettings(s);
+      } else {
+        // just toggle classes
+      }
+      setToggle(darkToggle, !!isDark, false);
+    }
+
+    // --- Event wiring ---
+
+    // Initialize UI from stored settings
+    let SETTINGS = loadSettings();
+    applyToUI(SETTINGS);
+
+    // Detect location (uses Geolocation API — if allowed, fills input)
+    detectBtn.addEventListener('click', () => {
+      locationStatus.textContent = 'Detecting...';
+      if (!navigator.geolocation) {
+        locationStatus.textContent = 'Geolocation not supported';
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          const { latitude, longitude } = pos.coords;
+          locationInput.value = latitude.toFixed(4) + ',' + longitude.toFixed(4);
+          locationStatus.textContent = 'Detected';
+          SETTINGS.location = locationInput.value;
+          saveSettings(SETTINGS);
+        },
+        (err) => {
+          locationStatus.textContent = 'Permission denied or unavailable';
+        },
+        { timeout: 8000 }
+      );
+    });
+
+    // About preview and save
+    previewAboutBtn.addEventListener('click', () => {
+      aboutPreview.style.display = aboutPreview.style.display === 'none' ? 'block' : 'none';
+      aboutPreview.textContent = aboutInput.value || DEFAULTS.about;
+    });
+    saveAbout.addEventListener('click', () => {
+      SETTINGS.about = aboutInput.value;
+      saveSettings(SETTINGS);
+      aboutPreview.textContent = SETTINGS.about;
+      alert('About text saved locally');
+    });
+
+    // Dark mode toggle
+    darkToggle.addEventListener('click', () => {
+      SETTINGS.darkMode = !SETTINGS.darkMode;
+      setDark(SETTINGS.darkMode);
+      saveSettings(SETTINGS);
+    });
+
+    // Allow keyboard toggle
+    darkToggle.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Enter' || ev.key === ' ') {
+        ev.preventDefault();
+        darkToggle.click();
+      }
+    });
+
+    // AQI unit selection
+    segButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        segButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        SETTINGS.aqiUnit = btn.dataset.value;
+        saveSettings(SETTINGS);
+      });
+    });
+
+    // Notifications toggle & threshold
+    notifToggle.addEventListener('click', () => {
+      SETTINGS.notificationsEnabled = !SETTINGS.notificationsEnabled;
+      setToggle(notifToggle, SETTINGS.notificationsEnabled);
+      saveSettings(SETTINGS);
+    });
+    notifRange.addEventListener('input', (e) => {
+      const val = Number(e.target.value);
+      notifValue.textContent = String(val);
+      SETTINGS.notificationThreshold = val;
+      saveSettings(SETTINGS);
+    });
+
+    // Refresh frequency seg buttons
+    segFreqBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        segFreqBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const freq = Number(btn.dataset.freq);
+        SETTINGS.refreshFrequency = freq;
+        saveSettings(SETTINGS);
+      });
+    });
+
+    // Gas chips
+    gasChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const gas = chip.dataset.gas;
+        const idx = SETTINGS.visibleGases.indexOf(gas);
+        if (idx >= 0) {
+          SETTINGS.visibleGases.splice(idx,1);
+          chip.classList.remove('on');
+        } else {
+          SETTINGS.visibleGases.push(gas);
+          chip.classList.add('on');
+        }
+        saveSettings(SETTINGS);
+      });
+    });
+
+    // Chart style radios
+    styleRadios.forEach(r => {
+      r.addEventListener('click', () => {
+        styleRadios.forEach(rr => rr.classList.remove('selected'));
+        r.classList.add('selected');
+        SETTINGS.chartStyle = r.dataset.style;
+        saveSettings(SETTINGS);
+      });
+    });
+
+    // Predictions checkbox
+    predictCheckbox.addEventListener('change', (e) => {
+      SETTINGS.predictionsEnabled = !!e.target.checked;
+      saveSettings(SETTINGS);
+    });
+
+    // Age group selection
+    ageRadios.forEach(r => {
+      r.addEventListener('click', () => {
+        ageRadios.forEach(rr => rr.classList.remove('selected'));
+        r.classList.add('selected');
+        SETTINGS.ageGroup = r.dataset.age;
+        saveSettings(SETTINGS);
+      });
+    });
+
+    // Generate a simple personalized advice (replace with backend call)
+    generateAdviceBtn.addEventListener('click', async () => {
+      adviceBox.style.display = 'block';
+      adviceText.textContent = 'Generating advice...';
+
+      // build a small prompt from settings
+      const { ageGroup, visibleGases, notificationThreshold } = SETTINGS;
+      // Simulated processing delay
+      await new Promise(r => setTimeout(r, 700));
+
+      // Simple heuristic advice:
+      let adv = `Age group: ${ageGroup}.\nMonitored pollutants: ${visibleGases.join(', ')}.\n\n`;
+
+      if (visibleGases.includes('PM2.5') || visibleGases.includes('PM10')) {
+        adv += '- If particulate levels are high, avoid outdoor exercise and keep windows closed.\n';
+      }
+      if (visibleGases.includes('O₃')) {
+        adv += '- O₃ is higher in midday sun — avoid strenuous activity outdoors around noon.\n';
+      }
+      if (visibleGases.includes('CO')) {
+        adv += '- CO indicates combustion pollution; ensure good ventilation and avoid heavy traffic routes.\n';
+      }
+      if (ageGroup === 'Child') adv += '- Children: keep activities low-intensity outside and use indoor HEPA filtering if possible.\n';
+      if (ageGroup === 'Senior') adv += '- Seniors: limit exposure and consult physician if respiratory symptoms appear.\n';
+      if (ageGroup === 'Adult') adv += '- Adults: wear a certified mask outdoors when AQI exceeds ' + notificationThreshold + '.\n';
+
+      adv += '\nThis is simulated advice — integrate your AI/Flask endpoint to produce richer suggestions.';
+
+      adviceText.textContent = adv;
+    });
+
+    // Save all button
+    saveAllBtn.addEventListener('click', () => {
+      // sync some fields
+      SETTINGS.location = locationInput.value.trim();
+      SETTINGS.about = aboutInput.value.trim();
+      saveSettings(SETTINGS);
+      alert('Settings saved locally (localStorage).');
+    });
+
+    // keep UI updated if user types location or about
+    locationInput.addEventListener('input', () => {
+      currentLocation.textContent = locationInput.value || '—';
+    });
+    aboutInput.addEventListener('input', () => {
+      aboutPreview.textContent = aboutInput.value;
+    });
+
+    // On first load, make sure local defaults are set
+    saveSettings(SETTINGS);
+
+    // Expose a helper for future integration:
+    // window.getAQISettings() returns the current settings object (useful for other scripts)
+    window.getAQISettings = () => ({ ...SETTINGS });
+  </script>
+</body>
+</html>

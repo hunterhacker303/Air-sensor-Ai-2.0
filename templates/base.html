@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <title>AQI Monitor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        // Dark mode toggle
+        function toggleTheme() {
+            document.documentElement.classList.toggle("dark");
+            localStorage.setItem("theme", document.documentElement.classList.contains("dark") ? "dark" : "light");
+        }
+
+        // Load saved theme
+        document.addEventListener("DOMContentLoaded", () => {
+            if (localStorage.getItem("theme") === "light") {
+                document.documentElement.classList.remove("dark");
+            }
+        });
+
+        // Smooth scrolling
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: "smooth" });
+        }
+    </script>
+
+</head>
+<body class="bg-white dark:bg-neutral-950 text-gray-900 dark:text-white">
+
+<!-- NAVBAR -->
+<nav class="sticky top-0 z-50 bg-white/90 dark:bg-neutral-900/90 backdrop-blur border-b border-gray-200 dark:border-neutral-700">
+    <div class="max-w-7xl mx-auto px-6 py-3 flex justify-between items-center">
+
+        <h1 class="font-bold text-xl cursor-pointer" onclick="scrollToSection('home')">
+            AirSense
+        </h1>
+
+        <div class="hidden md:flex items-center gap-6 text-sm font-medium">
+
+            <button onclick="scrollToSection('dashboard')" class="hover:text-indigo-500 transition">Dashboard</button>
+            <button onclick="scrollToSection('device')" class="hover:text-indigo-500 transition">Device</button>
+            <button onclick="scrollToSection('trends')" class="hover:text-indigo-500 transition">Trends</button>
+            <button onclick="scrollToSection('forecast')" class="hover:text-indigo-500 transition">Forecast</button>
+
+            <!-- <button onclick="scrollToSection('alerts')" class="hover:text-indigo-500 transition">Alerts</button> -->
+            <button onclick="window.location.href='/settings'" 
+        class="hover:text-indigo-500 transition">
+    Settings
+</button>
+
+
+            <!-- Dark Mode Toggle -->
+            <!-- <button onclick="toggleTheme()" 
+                    class="px-3 py-1 border dark:border-neutral-600 rounded text-xs">
+                Day / Night
+            </button> -->
+        </div>
+    </div>
+</nav>
+
+<!-- PAGE CONTENT -->
+<div class="pt-6">
+    {% block content %}{% endblock %}
+</div>
+
+</body>
+</html>

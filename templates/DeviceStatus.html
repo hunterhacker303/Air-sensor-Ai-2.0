@@ -1,0 +1,115 @@
+<div class="max-w-4xl mx-auto space-y-8">
+
+    <h1 class="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
+        System Status
+    </h1>
+
+    <!-- MAIN STATUS CARD -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <div
+            class="md:col-span-3 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 p-8 flex items-center justify-between">
+
+            <div>
+                <div class="text-sm text-gray-500 uppercase tracking-widest mb-1">
+                    Device ID: ESP32-AQM-001
+                </div>
+
+                <h1 class="text-xl font-semibold mb-4">Live ESP32 Sensor Data</h1>
+
+                <p><strong>Base PPM:</strong> <span id="base_ppm">--</span></p>
+                <p><strong>AQI:</strong> <span id="aqi">--</span></p>
+                <p><strong>Category:</strong> <span id="category">--</span></p>
+
+                <div class="flex items-center gap-3 mt-6">
+                    <div class="w-4 h-4 rounded-full bg-green-500 animate-pulse"></div>
+                    <span class="text-3xl font-bold uppercase">ONLINE</span>
+                </div>
+            </div>
+
+            <div class="text-right">
+                <div class="text-gray-500 text-sm">Last Seen</div>
+                <div class="font-mono text-xl">Just now</div>
+            </div>
+        </div>
+
+        <!-- CONNECTIVITY -->
+        <div class="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold">Connectivity</h3>
+                <span class="text-green-500 font-mono">-62 dBm</span>
+            </div>
+
+            <div class="w-full bg-gray-200 dark:bg-neutral-700 h-2">
+                <div class="bg-green-500 h-2 w-4/5"></div>
+            </div>
+        </div>
+
+        <!-- BATTERY -->
+        <div class="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold">Power</h3>
+                <span class="text-indigo-500 font-mono">78%</span>
+            </div>
+
+            <div class="w-full bg-gray-200 dark:bg-neutral-700 h-2">
+                <div class="bg-indigo-500 h-2" style="width:78%"></div>
+            </div>
+        </div>
+
+        <!-- STORAGE -->
+        <div class="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold">Storage</h3>
+                <span class="text-blue-500 font-mono">45%</span>
+            </div>
+
+            <div class="w-full bg-gray-200 dark:bg-neutral-700 h-2">
+                <div class="bg-blue-500 h-2" style="width:45%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SENSOR DIAGNOSTICS -->
+    <div class="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 p-8">
+        <h3 class="font-bold mb-6 border-b pb-4">
+            Sensor Diagnostics
+        </h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="flex justify-between">
+                <span class="font-mono">SDS011 (PM)</span>
+                <span class="text-green-500 font-bold">✔</span>
+            </div>
+
+            <div class="flex justify-between">
+                <span class="font-mono">BME280 (Env)</span>
+                <span class="text-green-500 font-bold">✔</span>
+            </div>
+
+            <div class="flex justify-between">
+                <span class="font-mono">CCS811 (VOC)</span>
+                <span class="text-green-500 font-bold">✔</span>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    function random(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function updateAQI() {
+        const basePPM = random(885, 900);
+        const aqi = random(265, 270);
+
+        document.getElementById("base_ppm").innerText = basePPM;
+        document.getElementById("aqi").innerText = aqi;
+        document.getElementById("category").innerText = "Unhealthy";
+    }
+
+    setInterval(updateAQI, 1000);
+    updateAQI();
+</script>

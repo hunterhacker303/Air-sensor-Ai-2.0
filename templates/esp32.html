@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ESP32 Live Data</title>
+</head>
+<body>
+
+<h1>Live ESP32 Sensor Data</h1>
+
+<!-- <p><strong>Raw:</strong> <span id="raw">loading...</span></p>
+<p><strong>Voltage:</strong> <span id="voltage">loading...</span></p> -->
+<p><strong>Base PPM:</strong> <span id="base_ppm">loading...</span></p>
+<p><strong>AQI:</strong> <span id="aqi">loading...</span></p>
+<p><strong>Category:</strong> <span id="category">loading...</span></p>
+
+<script>
+async function loadData() {
+    const res = await fetch("/api/esp32");
+    const data = await res.json();
+
+    // document.getElementById("raw").innerText = data.raw;
+    // document.getElementById("voltage").innerText = data.voltage;
+    document.getElementById("base_ppm").innerText = data.base_ppm;
+    document.getElementById("aqi").innerText = data.aqi;
+    document.getElementById("category").innerText = data.category;
+}
+
+setInterval(loadData, 1000);
+loadData();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Air Pollution Awareness</title>
+
+    <!-- TailwindCSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-white dark:bg-neutral-950 text-gray-900 dark:text-white">
+
+    <div class="space-y-12 p-6 md:p-12">
+
+        <!-- Header Section -->
+        <div class="text-center max-w-3xl mx-auto">
+            <h1 class="text-3xl md:text-5xl font-bold mb-6 tracking-tight">
+                Understanding The Invisible
+            </h1>
+            <p class="text-lg text-gray-600 dark:text-gray-300">
+                Air pollution is the single largest environmental health risk. Learn about what you are breathing.
+            </p>
+        </div>
+
+        <!-- Card Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+            <!-- PM2.5 Card -->
+            <div class="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 p-6 hover:border-black dark:hover:border-white transition-colors group">
+                <div class="mb-4 text-gray-400 group-hover:text-black dark:group-hover:text-white transition-colors">
+                    <!-- Wind Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17.7 7.7A2 2 0 1 0 14 5h.01M4 12h11a2 2 0 1 1-2 2M4 18h6a2 2 0 1 1-2 2"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold mb-3">Particulate Matter 2.5</h3>
+                <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+                    Fine inhalable particles 2.5 micrometers or smaller. They penetrate deep into the lungs and enter the bloodstream, causing cardiovascular and respiratory problems.
+                </p>
+            </div>
+
+            <!-- PM10 Card -->
+            <div class="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 p-6 hover:border-black dark:hover:border-white transition-colors group">
+                <div class="mb-4 text-gray-400 group-hover:text-black dark:group-hover:text-white transition-colors">
+                    <!-- Wind Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17.7 7.7A2 2 0 1 0 14 5h.01M4 12h11a2 2 0 1 1-2 2M4 18h6a2 2 0 1 1-2 2"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold mb-3">Particulate Matter 10</h3>
+                <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+                    Larger inhalable particles such as dust, pollen, and mold. They irritate eyes, nose, throat, and reduce breathing comfort.
+                </p>
+            </div>
+
+            <!-- VOC Card -->
+            <div class="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 p-6 hover:border-black dark:hover:border-white transition-colors group">
+                <div class="mb-4 text-gray-400 group-hover:text-black dark:group-hover:text-white transition-colors">
+                    <!-- Beaker Icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10 2v4l-6 10a5 5 0 0 0 5 8h6a5 5 0 0 0 5-8l-6-10V2"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold mb-3">Volatile Organic Compounds</h3>
+                <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+                    VOCs come from paints, chemicals, cleaners, and plastics. Long-term exposure affects the liver, kidneys, and nervous system.
+                </p>
+            </div>
+
+        </div>
+
+        <!-- Black/White Section -->
+        <div class="bg-black dark:bg-white text-white dark:text-black p-8 md:p-12">
+
+            <div class="flex flex-col md:flex-row items-center gap-8">
+
+                <!-- Health Impacts -->
+                <div class="flex-1">
+                    <h2 class="text-2xl font-bold mb-4 uppercase tracking-widest">Health Impacts</h2>
+                    <ul class="space-y-4">
+
+                        <!-- Respiratory -->
+                        <li class="flex items-start gap-4">
+                            <!-- Skull Icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 shrink-0 mt-1" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2a7 7 0 0 0-7 7v3c0 1.1.9 2 2 2h1v4a1 1 0 0 0 2 0v-4h4v4a1 1 0 0 0 2 0v-4h1c1.1 0 2-.9 2-2V9a7 7 0 0 0-7-7z" />
+                            </svg>
+                            <div>
+                                <span class="font-bold block text-lg">Respiratory Disease</span>
+                                <span class="opacity-80 text-sm">Aggravates asthma, increases coughing, and decreases lung function.</span>
+                            </div>
+                        </li>
+
+                        <!-- Heart -->
+                        <li class="flex items-start gap-4">
+                            <!-- Activity Icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 shrink-0 mt-1" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                            </svg>
+                            <div>
+                                <span class="font-bold block text-lg">Cardiovascular Damage</span>
+                                <span class="opacity-80 text-sm">Linked to heart attacks, stroke risk, and irregular heart rhythms.</span>
+                            </div>
+                        </li>
+
+                    </ul>
+                </div>
+
+                <!-- Safety Tips -->
+                <div class="flex-1 border-l border-gray-700 dark:border-gray-300 pl-0 md:pl-8">
+                    <h2 class="text-2xl font-bold mb-4 uppercase tracking-widest">How to Stay Safe</h2>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                        <!-- Check AQI -->
+                        <div class="bg-white/10 dark:bg-black/10 p-4 backdrop-blur-sm">
+                            <!-- ShieldCheck Icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mb-2" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                            </svg>
+                            <span class="font-bold">Check AQI Daily</span>
+                        </div>
+
+                        <!-- Purifier -->
+                        <div class="bg-white/10 dark:bg-black/10 p-4 backdrop-blur-sm">
+                            <!-- Wind Icon -->
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 mb-2" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17.7 7.7A2 2 0 1 0 14 5h.01M4 12h11a2 2 0 1 1-2 2M4 18h6a2 2 0 1 1-2 2"/>
+                            </svg>
+                            <span class="font-bold">Use Air Purifiers</span>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

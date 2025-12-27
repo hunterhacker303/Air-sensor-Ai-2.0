@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ESP32 VOC Monitor</title>
+</head>
+<body>
+
+<h1>Live VOC Value</h1>
+
+<p>VOC Level: <span id="vocValue">Loading...</span> ppm</p>
+
+<script>
+async function loadVOC() {
+    const res = await fetch("/api/esp32");
+    const data = await res.json();
+
+    document.getElementById("vocValue").innerText =
+        data.voc !== undefined ? data.voc : "No data";
+}
+
+setInterval(loadVOC, 1000);
+loadVOC();
+</script>
+
+</body>
+</html>

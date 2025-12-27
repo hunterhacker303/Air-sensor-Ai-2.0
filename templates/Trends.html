@@ -1,0 +1,139 @@
+<div class="space-y-8">
+
+    <!-- HEADER -->
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">
+                Pollution Trends
+            </h1>
+            <p class="text-gray-500 dark:text-gray-400 mt-1">
+                Analyze historical air quality patterns.
+            </p>
+        </div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+        <!-- PM2.5 -->
+        <div class="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 p-6">
+            <h3 class="text-lg font-bold mb-4 text-gray-900 dark:text-white">
+                PM 2.5 Trends (Last 24h)
+            </h3>
+
+            <!-- 🔥 FIX: Fixed-height wrapper -->
+            <div style="height:300px;">
+                <canvas id="pm25Chart"></canvas>
+            </div>
+        </div>
+
+        <!-- PM10 -->
+        <div class="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 p-6">
+            <h3 class="text-lg font-bold mb-4 text-gray-900 dark:text-white">
+                PM 10 Trends (Last 24h)
+            </h3>
+
+            <!-- 🔥 FIX: Fixed-height wrapper -->
+            <div style="height:300px;">
+                <canvas id="pm10Chart"></canvas>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+/* ========= GLOBAL CHARTS ========= */
+let pm25Chart = null;
+let pm10Chart = null;
+
+/* ========= LOAD DATA ========= */
+async function loadTrendData() {
+    const res = await fetch("/api/trends");
+    const data = await res.json();
+
+    const labels = data.map(d => d.time);
+    const pm25 = data.map(d => d.pm25);
+    const pm10 = data.map(d => d.pm10);
+
+    renderPM25Chart(labels, pm25);
+    renderPM10Chart(labels, pm10);
+}
+
+/* ========= PM2.5 ========= */
+function renderPM25Chart(labels, values) {
+    const ctx = document.getElementById("pm25Chart").getContext("2d");
+
+    if (pm25Chart) {
+        pm25Chart.data.labels = labels;
+        pm25Chart.data.datasets[0].data = values;
+        pm25Chart.update();
+        return;
+    }
+
+    pm25Chart = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels,
+            datasets: [{
+                label: "PM 2.5 (µg/m³)",
+                data: values,
+                borderColor: "#6366f1",
+                backgroundColor: "rgba(99,102,241,0.15)",
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false, // REQUIRED
+            scales: {
+                y: { beginAtZero: false }
+            }
+        }
+    });
+}
+
+/* ========= PM10 ========= */
+function renderPM10Chart(labels, values) {
+    const ctx = document.getElementById("pm10Chart").getContext("2d");
+
+    if (pm10Chart) {
+        pm10Chart.data.labels = labels;
+        pm10Chart.data.datasets[0].data = values;
+        pm10Chart.update();
+        return;
+    }
+
+    pm10Chart = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels,
+            datasets: [{
+                label: "PM 10 (µg/m³)",
+                data: values,
+                borderColor: "#10b981",
+                backgroundColor: "rgba(16,185,129,0.15)",
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false, // REQUIRED
+            scales: {
+                y: { beginAtZero: false }
+            }
+        }
+    });
+}
+
+/* ========= INIT ========= */
+document.addEventListener("DOMContentLoaded", loadTrendData);
+
+// SAFE if you want live updates
+// setInterval(loadTrendData, 5000);
+</script>
