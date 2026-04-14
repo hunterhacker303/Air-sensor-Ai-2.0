@@ -10,7 +10,7 @@ Are expensive and not scalable
 
 Don’t translate AQI into actionable insights
 
-AirSense AI fixes that.
+AirSense AI fixes that..
 
 💡 Solution Overview
 
