@@ -115,5 +115,5 @@ Government API integration
 👤 Team / Developer
 
 Harshit Namdev
-B.Tech CSE | IoT & AI Enthusiast...
+B.Tech CSE | IoT & AI Enthusiast
 
